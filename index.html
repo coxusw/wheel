@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Approved Raffle Wheel</title>
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: rgba(15, 23, 42, 0.92);
+      --panel-2: rgba(2, 6, 23, 0.92);
+      --text: #ffffff;
+      --muted: #cbd5e1;
+      --accent: #22c55e;
+      --accent-2: #facc15;
+      --danger: #ef4444;
+      --border: rgba(255, 255, 255, 0.16);
+      --shadow: 0 20px 70px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(34, 197, 94, 0.22), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(250, 204, 21, 0.15), transparent 28%),
+        var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      padding: 20px;
+    }
+
+    .app {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .top {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .brand-logo {
+      width: 62px;
+      height: 62px;
+      object-fit: contain;
+      border-radius: 16px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid var(--border);
+      display: none;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .setup-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      padding: 12px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: rgba(34, 197, 94, 0.7);
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+    }
+
+    textarea {
+      min-height: 160px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .names-box {
+      min-height: 310px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .help {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-top: 7px;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    button {
+      border: 0;
+      border-radius: 13px;
+      padding: 12px 15px;
+      cursor: pointer;
+      font-weight: 800;
+      background: #334155;
+      color: white;
+      transition: transform .12s ease, filter .12s ease;
+    }
+
+    button:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #052e16;
+    }
+
+    button.gold {
+      background: var(--accent-2);
+      color: #422006;
+    }
+
+    button.danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .status {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .status.good {
+      color: #bbf7d0;
+      background: rgba(34,197,94,.12);
+      border-color: rgba(34,197,94,.35);
+    }
+
+    .status.bad {
+      color: #fecaca;
+      background: rgba(239,68,68,.12);
+      border-color: rgba(239,68,68,.35);
+    }
+
+    .wheel-area {
+      display: none;
+    }
+
+    .wheel-layout {
+      display: grid;
+      grid-template-columns: minmax(320px, 640px) 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .count {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      margin-bottom: 18px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.1);
+      border: 1px solid var(--border);
+      color: #dcfce7;
+      font-weight: 800;
+    }
+
+    .wheel-wrap {
+      position: relative;
+      width: min(640px, 90vw);
+      aspect-ratio: 1 / 1;
+      margin: 0 auto;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      background: #020617;
+      border-radius: 50%;
+      box-shadow:
+        inset 0 0 0 9px rgba(255,255,255,.08),
+        0 18px 60px rgba(0,0,0,.35);
+    }
+
+    .pointer {
+      position: absolute;
+      top: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 19px solid transparent;
+      border-right: 19px solid transparent;
+      border-top: 46px solid var(--accent-2);
+      z-index: 5;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,.65));
+    }
+
+    .spin-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: end;
+      margin-bottom: 12px;
+    }
+
+    .winner {
+      margin-top: 16px;
+      min-height: 82px;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(34,197,94,.12);
+      border: 1px solid rgba(34,197,94,.35);
+      color: #bbf7d0;
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .history {
+      margin-top: 14px;
+      max-height: 320px;
+      overflow: auto;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      padding: 10px;
+    }
+
+    .history-item {
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.06);
+      margin-bottom: 8px;
+      line-height: 1.35;
+    }
+
+    .history-item.final {
+      background: rgba(250,204,21,.14);
+      border: 1px solid rgba(250,204,21,.35);
+      color: #fef3c7;
+      font-weight: 900;
+    }
+
+    .small {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 950px) {
+      .setup-grid,
+      .wheel-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .names-box {
+        min-height: 240px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <section id="setupArea">
+      <div class="top">
+        <div>
+          <h1>Approved Raffle Wheel</h1>
+          <p class="subtitle">Enter raffle details, verify your approved login, then generate the wheel.</p>
+        </div>
+      </div>
+
+      <div class="setup-grid">
+        <div class="card">
+          <div class="field">
+            <label for="raffleTitle">Wheel Title</label>
+            <input id="raffleTitle" type="text" placeholder="Example: Crested Critters Giveaway" />
+          </div>
+
+          <div class="field">
+            <label for="raffleDescription">Description</label>
+            <textarea id="raffleDescription" placeholder="Example: Winner receives one free isopod culture."></textarea>
+          </div>
+
+          <div class="field">
+            <label for="logoFile">Logo</label>
+            <input id="logoFile" type="file" accept="image/*" />
+            <div class="help">The logo stays in this browser session only. It is not uploaded anywhere.</div>
+          </div>
+
+          <div class="field">
+            <label for="namesInput">Name List</label>
+            <textarea id="namesInput" class="names-box" placeholder="Paste names here, one per line."></textarea>
+            <div class="help">Duplicate names are removed automatically.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="field">
+            <label for="usernameInput">Approved Username</label>
+            <input id="usernameInput" type="text" autocomplete="username" />
+          </div>
+
+          <div class="field">
+            <label for="passwordInput">Password</label>
+            <input id="passwordInput" type="password" autocomplete="current-password" />
+          </div>
+
+          <div class="buttons">
+            <button id="generateBtn" class="primary">Generate Wheel</button>
+            <button id="demoBtn" type="button">Load Demo Names</button>
+          </div>
+
+          <div id="authStatus" class="status">
+            Waiting for raffle details.
+          </div>
+
+          <div class="help">
+            Your approved user list is checked against your private Apps Script/Google Sheet backend.
+            Do not put usernames/passwords directly inside this GitHub Pages file.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="wheelArea" class="wheel-area">
+      <div class="top">
+        <div class="brand">
+          <img id="displayLogo" class="brand-logo" alt="Raffle logo" />
+          <div>
+            <h1 id="displayTitle">Raffle Wheel</h1>
+            <p id="displayDescription" class="subtitle"></p>
+            <div class="count">
+              <span id="count">0</span> names loaded
+            </div>
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button id="editBtn">Edit Setup</button>
+          <button id="resetBtn" class="danger">Reset Results</button>
+        </div>
+      </div>
+
+      <div class="wheel-layout">
+        <div class="card">
+          <div class="wheel-wrap">
+            <div class="pointer"></div>
+            <canvas id="wheel" width="900" height="900"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="spin-row">
+            <div>
+              <label for="spinCountInput">Number of Spins</label>
+              <input id="spinCountInput" type="number" min="1" max="10" value="1" />
+              <div class="help">Each spin lasts 5 seconds. Final winner is the last spin.</div>
+            </div>
+            <button id="randomSpinCountBtn" class="gold">Random 1–10</button>
+          </div>
+
+          <div class="buttons">
+            <button id="startSpinsBtn" class="primary">Start Spins</button>
+            <button id="singleSpinBtn">Single Spin</button>
+            <button id="copyResultsBtn">Copy Results</button>
+          </div>
+
+          <div id="winnerBox" class="winner">
+            Ready to spin.
+          </div>
+
+          <div class="history">
+            <div class="small" id="historyEmpty">Spin winners will appear here.</div>
+            <div id="historyList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    /***************************************************************
+      IMPORTANT:
+      Paste your deployed Apps Script Web App URL below.
+      Example:
+      const AUTH_ENDPOINT = "https://script.google.com/macros/s/AKfycb.../exec";
+    ****************************************************************/
+    const AUTH_ENDPOINT = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+    const SPIN_MS = 5000;
+
+    const setupArea = document.getElementById("setupArea");
+    const wheelArea = document.getElementById("wheelArea");
+
+    const raffleTitle = document.getElementById("raffleTitle");
+    const raffleDescription = document.getElementById("raffleDescription");
+    const logoFile = document.getElementById("logoFile");
+    const namesInput = document.getElementById("namesInput");
+    const usernameInput = document.getElementById("usernameInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const generateBtn = document.getElementById("generateBtn");
+    const demoBtn = document.getElementById("demoBtn");
+    const authStatus = document.getElementById("authStatus");
+
+    const displayLogo = document.getElementById("displayLogo");
+    const displayTitle = document.getElementById("displayTitle");
+    const displayDescription = document.getElementById("displayDescription");
+    const countEl = document.getElementById("count");
+    const editBtn = document.getElementById("editBtn");
+    const resetBtn = document.getElementById("resetBtn");
+
+    const canvas = document.getElementById("wheel");
+    const ctx = canvas.getContext("2d");
+    const spinCountInput = document.getElementById("spinCountInput");
+    const randomSpinCountBtn = document.getElementById("randomSpinCountBtn");
+    const startSpinsBtn = document.getElementById("startSpinsBtn");
+    const singleSpinBtn = document.getElementById("singleSpinBtn");
+    const copyResultsBtn = document.getElementById("copyResultsBtn");
+    const winnerBox = document.getElementById("winnerBox");
+    const historyList = document.getElementById("historyList");
+    const historyEmpty = document.getElementById("historyEmpty");
+
+    let names = [];
+    let spinHistory = [];
+    let rotation = 0;
+    let spinning = false;
+    let logoDataUrl = "";
+
+    function setStatus(message, type) {
+      authStatus.textContent = message;
+      authStatus.className = "status" + (type ? " " + type : "");
+    }
+
+    function cleanName(raw) {
+      return String(raw || "")
+        .replace(/\u00a0/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function parseNames(text) {
+      return Array.from(
+        new Set(
+          String(text || "")
+            .split(/\n+/)
+            .map(cleanName)
+            .filter(Boolean)
+        )
+      );
+    }
+
+    function secureRandomInt(max) {
+      if (window.crypto && crypto.getRandomValues) {
+        const range = 0x100000000;
+        const limit = range - (range % max);
+        const arr = new Uint32Array(1);
+        let value;
+
+        do {
+          crypto.getRandomValues(arr);
+          value = arr[0];
+        } while (value >= limit);
+
+        return value % max;
+      }
+
+      return Math.floor(Math.random() * max);
+    }
+
+    async function sha256Hex(text) {
+      if (!crypto.subtle) {
+        throw new Error("This page needs HTTPS for secure password hashing. GitHub Pages HTTPS works.");
+      }
+
+      const encoder = new TextEncoder();
+      const data = encoder.encode(text);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+
+      return Array.from(new Uint8Array(hashBuffer))
+        .map((byte) => byte.toString(16).padStart(2, "0"))
+        .join("");
+    }
+
+    function jsonp(url, params) {
+      return new Promise((resolve, reject) => {
+        const callbackName = "__raffleAuthCallback_" + Date.now() + "_" + Math.floor(Math.random() * 1000000);
+
+        const fullParams = new URLSearchParams({
+          ...params,
+          callback: callbackName
+        });
+
+        const script = document.createElement("script");
+        const cleanup = () => {
+          try {
+            delete window[callbackName];
+          } catch {
+            window[callbackName] = undefined;
+          }
+
+          if (script.parentNode) {
+            script.parentNode.removeChild(script);
+          }
+        };
+
+        const timer = setTimeout(() => {
+          cleanup();
+          reject(new Error("The login check timed out."));
+        }, 15000);
+
+        window[callbackName] = (data) => {
+          clearTimeout(timer);
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror = () => {
+          clearTimeout(timer);
+          cleanup();
+          reject(new Error("Could not reach the approval server."));
+        };
+
+        script.src = url + "?" + fullParams.toString();
+        document.body.appendChild(script);
+      });
+    }
+
+    async function readLogoDataUrl() {
+      const file = logoFile.files && logoFile.files[0];
+
+      if (!file) return "";
+
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => resolve(reader.result || "");
+        reader.onerror = () => reject(new Error("Could not read logo file."));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function verifyApprovedLogin(username, password) {
+      if (!AUTH_ENDPOINT || AUTH_ENDPOINT.includes("PASTE_YOUR_APPS_SCRIPT")) {
+        throw new Error("AUTH_ENDPOINT is not set yet. Paste your Apps Script Web App URL into index.html.");
+      }
+
+      const usernameKey = username.toLowerCase().trim();
+      const passwordHash = await sha256Hex(usernameKey + ":" + password);
+
+      return jsonp(AUTH_ENDPOINT, {
+        action: "login",
+        username: usernameKey,
+        passwordHash
+      });
+    }
+
+    async function handleGenerate() {
+      const title = cleanName(raffleTitle.value) || "Raffle Wheel";
+      const description = cleanName(raffleDescription.value);
+      const username = cleanName(usernameInput.value);
+      const password = String(passwordInput.value || "");
+      const nextNames = parseNames(namesInput.value);
+
+      if (!title) {
+        setStatus("Please enter a title.", "bad");
+        return;
+      }
+
+      if (nextNames.length < 2) {
+        setStatus("Please enter at least 2 names.", "bad");
+        return;
+      }
+
+      if (!username || !password) {
+        setStatus("Please enter your approved username and password.", "bad");
+        return;
+      }
+
+      generateBtn.disabled = true;
+      setStatus("Checking approved access...", "");
+
+      try {
+        const auth = await verifyApprovedLogin(username, password);
+
+        if (!auth || !auth.ok) {
+          setStatus(auth && auth.message ? auth.message : "Login was not approved.", "bad");
+          generateBtn.disabled = false;
+          return;
+        }
+
+        logoDataUrl = await readLogoDataUrl();
+        names = nextNames;
+        spinHistory = [];
+        rotation = 0;
+
+        displayTitle.textContent = title;
+        displayDescription.textContent = description;
+
+        if (logoDataUrl) {
+          displayLogo.src = logoDataUrl;
+          displayLogo.style.display = "block";
+        } else {
+          displayLogo.removeAttribute("src");
+          displayLogo.style.display = "none";
+        }
+
+        setupArea.style.display = "none";
+        wheelArea.style.display = "block";
+
+        updateCount();
+        drawWheel();
+        renderHistory();
+        winnerBox.textContent = "Ready to spin.";
+        setStatus("Approved. Wheel generated.", "good");
+      } catch (err) {
+        console.error(err);
+        setStatus(err.message || "Something went wrong checking access.", "bad");
+      } finally {
+        generateBtn.disabled = false;
+      }
+    }
+
+    function updateCount() {
+      countEl.textContent = names.length;
+      startSpinsBtn.disabled = names.length < 2 || spinning;
+      singleSpinBtn.disabled = names.length < 2 || spinning;
+      randomSpinCountBtn.disabled = spinning;
+    }
+
+    function drawWheel() {
+      const w = canvas.width;
+      const h = canvas.height;
+      const cx = w / 2;
+      const cy = h / 2;
+      const radius = Math.min(cx, cy) - 16;
+
+      ctx.clearRect(0, 0, w, h);
+
+      if (!names.length) {
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 34px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("No names loaded", cx, cy);
+        return;
+      }
+
+      const segment = (Math.PI * 2) / names.length;
+      const showLabels = names.length <= 90;
+
+      for (let i = 0; i < names.length; i++) {
+        const start = rotation + i * segment;
+        const end = start + segment;
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, start, end);
+        ctx.closePath();
+
+        ctx.fillStyle = "hsl(" + ((i * 360) / names.length) + ", 74%, 56%)";
+        ctx.fill();
+
+        ctx.strokeStyle = "rgba(255,255,255,.55)";
+        ctx.lineWidth = names.length > 80 ? 0.7 : 1.4;
+        ctx.stroke();
+
+        if (showLabels) {
+          ctx.save();
+          ctx.translate(cx, cy);
+          ctx.rotate(start + segment / 2);
+          ctx.textAlign = "right";
+          ctx.fillStyle = "#111827";
+          ctx.font =
+            names.length > 55
+              ? "bold 12px Arial"
+              : names.length > 28
+              ? "bold 15px Arial"
+              : "bold 21px Arial";
+
+          const label = names[i].length > 25 ? names[i].slice(0, 23) + "…" : names[i];
+
+          ctx.fillText(label, radius - 18, 5);
+          ctx.restore();
+        }
+      }
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, 58, 0, Math.PI * 2);
+      ctx.fillStyle = "#111827";
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,.82)";
+      ctx.lineWidth = 5;
+      ctx.stroke();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 22px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("SPIN", cx, cy + 8);
+    }
+
+    function easeOutCubic(t) {
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    function pickWinnerIndex() {
+      return secureRandomInt(names.length);
+    }
+
+    function spinOnce(spinNumber, totalSpins) {
+      return new Promise((resolve) => {
+        if (spinning || names.length < 2) {
+          resolve(null);
+          return;
+        }
+
+        spinning = true;
+        updateCount();
+
+        const winnerIndex = pickWinnerIndex();
+        const winnerName = names[winnerIndex];
+
+        const segment = (Math.PI * 2) / names.length;
+        const pointerAngle = -Math.PI / 2;
+
+        let target = pointerAngle - (winnerIndex + 0.5) * segment;
+
+        while (target < rotation + 7 * Math.PI * 2) {
+          target += Math.PI * 2;
+        }
+
+        const startRotation = rotation;
+        const change = target - startRotation;
+        const startTime = performance.now();
+
+        winnerBox.textContent = "Spin " + spinNumber + " of " + totalSpins + "...";
+
+        function animate(now) {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / SPIN_MS, 1);
+          const eased = easeOutCubic(progress);
+
+          rotation = startRotation + change * eased;
+          drawWheel();
+
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+            return;
+          }
+
+          rotation = target;
+          drawWheel();
+
+          const result = {
+            spin: spinNumber,
+            total: totalSpins,
+            winner: winnerName,
+            final: spinNumber === totalSpins,
+            time: new Date().toLocaleString()
+          };
+
+          spinHistory.push(result);
+          renderHistory();
+
+          winnerBox.textContent = result.final
+            ? "Final Winner: " + winnerName
+            : "Spin " + spinNumber + " Winner: " + winnerName;
+
+          spinning = false;
+          updateCount();
+          resolve(result);
+        }
+
+        requestAnimationFrame(animate);
+      });
+    }
+
+    async function runSpins(count) {
+      if (spinning) return;
+
+      const total = Math.max(1, Math.min(10, Number(count) || 1));
+
+      spinCountInput.value = total;
+      spinHistory = [];
+      renderHistory();
+
+      for (let i = 1; i <= total; i++) {
+        const result = await spinOnce(i, total);
+
+        if (!result) break;
+
+        if (i < total) {
+          await new Promise((resolve) => setTimeout(resolve, 700));
+        }
+      }
+    }
+
+    function renderHistory() {
+      historyList.innerHTML = "";
+
+      if (!spinHistory.length) {
+        historyEmpty.style.display = "block";
+        return;
+      }
+
+      historyEmpty.style.display = "none";
+
+      for (const item of spinHistory) {
+        const div = document.createElement("div");
+        div.className = "history-item" + (item.final ? " final" : "");
+        div.textContent = item.final
+          ? "FINAL — Spin " + item.spin + " of " + item.total + ": " + item.winner
+          : "Spin " + item.spin + " of " + item.total + ": " + item.winner;
+
+        historyList.appendChild(div);
+      }
+    }
+
+    function resetResults() {
+      spinHistory = [];
+      winnerBox.textContent = "Ready to spin.";
+      renderHistory();
+      drawWheel();
+    }
+
+    async function copyResults() {
+      const title = displayTitle.textContent || "Raffle Wheel";
+      const lines = [
+        title,
+        displayDescription.textContent || "",
+        "",
+        "Spin Results:",
+        ...spinHistory.map((item) => {
+          return (item.final ? "FINAL — " : "") + "Spin " + item.spin + " of " + item.total + ": " + item.winner;
+        })
+      ].filter((line, index) => line || index < 3);
+
+      try {
+        await navigator.clipboard.writeText(lines.join("\n"));
+        winnerBox.textContent = "Results copied.";
+      } catch {
+        winnerBox.textContent = "Could not copy results. You can manually select them.";
+      }
+    }
+
+    generateBtn.addEventListener("click", handleGenerate);
+
+    demoBtn.addEventListener("click", () => {
+      raffleTitle.value = "Demo Giveaway";
+      raffleDescription.value = "This is a sample raffle wheel.";
+      namesInput.value = [
+        "Christine Ike",
+        "Dyllan Stroede",
+        "Haley Pawlowski",
+        "Mike Sandage",
+        "Samantha Rae Morales",
+        "Wendy Russell"
+      ].join("\n");
+      setStatus("Demo names loaded. Enter an approved username/password, then generate.", "");
+    });
+
+    editBtn.addEventListener("click", () => {
+      wheelArea.style.display = "none";
+      setupArea.style.display = "block";
+    });
+
+    resetBtn.addEventListener("click", resetResults);
+
+    randomSpinCountBtn.addEventListener("click", () => {
+      spinCountInput.value = secureRandomInt(10) + 1;
+    });
+
+    startSpinsBtn.addEventListener("click", () => {
+      runSpins(spinCountInput.value);
+    });
+
+    singleSpinBtn.addEventListener("click", () => {
+      spinCountInput.value = 1;
+      runSpins(1);
+    });
+
+    copyResultsBtn.addEventListener("click", copyResults);
+
+    spinCountInput.addEventListener("input", () => {
+      let value = Number(spinCountInput.value || 1);
+      value = Math.max(1, Math.min(10, value));
+      spinCountInput.value = value;
+    });
+
+    drawWheel();
+  </script>
+</body>
+</html>
