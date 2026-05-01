@@ -33,18 +33,19 @@
         var(--bg);
       color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
-      padding: 14px;
+      padding: clamp(8px, 1.5vw, 14px);
     }
 
     .app {
       max-width: 1180px;
+      width: 100%;
       margin: 0 auto;
     }
 
     .top {
-      margin-bottom: 12px;
+      margin-bottom: clamp(6px, 1.2vw, 12px);
       display: flex;
-      gap: 16px;
+      gap: 8px;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
@@ -57,8 +58,8 @@
     }
 
     .brand-logo {
-      width: 62px;
-      height: 62px;
+      width: clamp(42px, 7vw, 58px);
+      height: clamp(42px, 7vw, 58px);
       object-fit: contain;
       border-radius: 16px;
       background: rgba(255,255,255,.08);
@@ -67,39 +68,39 @@
     }
 
     h1 {
-      margin: 0 0 8px;
-      font-size: clamp(28px, 4vw, 44px);
+      margin: 0 0 5px;
+      font-size: clamp(23px, 3.4vw, 38px);
       line-height: 1;
     }
 
     .subtitle {
       color: var(--muted);
       margin: 0;
-      line-height: 1.5;
+      line-height: 1.35;
     }
 
     .card {
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 20px;
-      padding: 14px;
+      padding: clamp(8px, 1.5vw, 14px);
       box-shadow: var(--shadow);
     }
 
     .setup-grid {
       display: grid;
       grid-template-columns: 1.1fr 0.9fr;
-      gap: 18px;
+      gap: 12px;
       align-items: start;
     }
 
     .field {
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }
 
     label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       font-weight: 700;
     }
 
@@ -111,8 +112,8 @@
       border: 1px solid var(--border);
       background: var(--panel-2);
       color: var(--text);
-      padding: 12px;
-      font-size: 15px;
+      padding: 8px;
+      font-size: 14px;
       outline: none;
     }
 
@@ -124,13 +125,13 @@
     }
 
     textarea {
-      min-height: 160px;
+      min-height: 110px;
       resize: vertical;
       line-height: 1.45;
     }
 
     .names-box {
-      min-height: 310px;
+      min-height: min(260px, 32vh);
       font-family: Arial, Helvetica, sans-serif;
     }
 
@@ -138,26 +139,14 @@
       color: var(--muted);
       font-size: 13px;
       line-height: 1.45;
-      margin-top: 7px;
+      margin-top: 5px;
     }
-
-    .mode-note {
-      margin: 10px 0 14px;
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: rgba(250, 204, 21, 0.10);
-      border: 1px solid rgba(250, 204, 21, 0.28);
-      color: #fef3c7;
-      font-size: 14px;
-      line-height: 1.45;
-    }
-
-    .remaining-pill {
+.remaining-pill {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       margin: 10px 0 0;
-      padding: 8px 12px;
+      padding: 7px 10px;
       border-radius: 999px;
       background: rgba(34, 197, 94, 0.12);
       border: 1px solid rgba(34, 197, 94, 0.35);
@@ -170,14 +159,14 @@
     .buttons {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
     }
 
     button {
       border: 0;
       border-radius: 13px;
-      padding: 12px 15px;
+      padding: 10px 12px;
       cursor: pointer;
       font-weight: 800;
       background: #334155;
@@ -212,8 +201,8 @@
     }
 
     .status {
-      margin-top: 14px;
-      padding: 12px 14px;
+      margin-top: 10px;
+      padding: 10px 12px;
       border-radius: 14px;
       background: rgba(255,255,255,.08);
       border: 1px solid var(--border);
@@ -239,8 +228,8 @@
 
     .wheel-layout {
       display: grid;
-      grid-template-columns: minmax(280px, 520px) 1fr;
-      gap: 16px;
+      grid-template-columns: minmax(260px, min(44vw, 500px)) minmax(290px, 1fr);
+      gap: clamp(10px, 1.4vw, 16px);
       align-items: start;
     }
 
@@ -248,9 +237,9 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      margin-top: 8px;
-      margin-bottom: 10px;
-      padding: 8px 12px;
+      margin-top: 6px;
+      margin-bottom: 8px;
+      padding: 7px 10px;
       border-radius: 999px;
       background: rgba(255,255,255,.1);
       border: 1px solid var(--border);
@@ -260,7 +249,7 @@
 
     .wheel-wrap {
       position: relative;
-      width: min(520px, 62vh, 90vw);
+      width: min(500px, 54vh, 44vw);
       aspect-ratio: 1 / 1;
       margin: 0 auto;
     }
@@ -282,9 +271,9 @@
       transform: translateX(-50%);
       width: 0;
       height: 0;
-      border-left: 15px solid transparent;
-      border-right: 15px solid transparent;
-      border-top: 36px solid var(--accent-2);
+      border-left: 13px solid transparent;
+      border-right: 13px solid transparent;
+      border-top: 30px solid var(--accent-2);
       z-index: 5;
       filter: drop-shadow(0 3px 6px rgba(0,0,0,.65));
     }
@@ -292,39 +281,39 @@
     .spin-row {
       display: grid;
       grid-template-columns: 1fr auto;
-      gap: 10px;
+      gap: 8px;
       align-items: end;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
 
     .winner {
       margin-top: 16px;
-      min-height: 82px;
-      padding: 16px;
+      min-height: 62px;
+      padding: 12px;
       border-radius: 16px;
       background: rgba(34,197,94,.12);
       border: 1px solid rgba(34,197,94,.35);
       color: #bbf7d0;
-      font-size: 22px;
+      font-size: clamp(17px, 2.4vw, 21px);
       font-weight: 900;
       line-height: 1.35;
     }
 
     .history {
-      margin-top: 14px;
-      max-height: 240px;
+      margin-top: 10px;
+      max-height: min(220px, 28vh);
       overflow: auto;
       border-radius: 14px;
       border: 1px solid var(--border);
       background: var(--panel-2);
-      padding: 10px;
+      padding: 8px;
     }
 
     .history-item {
-      padding: 10px;
+      padding: 8px;
       border-radius: 12px;
       background: rgba(255,255,255,.06);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       line-height: 1.35;
     }
 
@@ -351,20 +340,104 @@
       pointer-events: none;
     }
 
-    @media (max-width: 950px) {
-      .setup-grid,
-      .wheel-layout {
-        grid-template-columns: 1fr;
+    @media (max-height: 760px) and (min-width: 951px) {
+      .wheel-wrap {
+        width: min(460px, 50vh, 42vw);
+      }
+
+      textarea {
+        min-height: 88px;
       }
 
       .names-box {
-        min-height: 240px;
+        min-height: min(220px, 28vh);
       }
 
-      .spin-row {
-        grid-template-columns: 1fr;
+      .history {
+        max-height: min(180px, 24vh);
+      }
+
+      .winner {
+        min-height: 54px;
       }
     }
+
+    @media (max-width: 950px) {
+      body {
+        padding: 8px;
+      }
+
+      .top {
+        align-items: flex-start;
+      }
+
+      .wheel-layout {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .wheel-wrap {
+        width: min(360px, 88vw, 38vh);
+      }
+
+      .brand {
+        align-items: flex-start;
+      }
+
+      .count {
+        margin-top: 5px;
+        margin-bottom: 6px;
+      }
+
+      .history {
+        max-height: 150px;
+      }
+
+      .winner {
+        min-height: 54px;
+      }
+
+      .buttons button {
+        flex: 1 1 auto;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .setup-grid {
+        gap: 10px;
+      }
+
+      .wheel-wrap {
+        width: min(320px, 92vw, 35vh);
+      }
+
+      h1 {
+        font-size: clamp(21px, 7vw, 30px);
+      }
+
+      .subtitle,
+      .help,
+      .small {
+        font-size: 12px;
+      }
+
+      input,
+      select,
+      textarea {
+        padding: 9px;
+        font-size: 14px;
+      }
+
+      button {
+        padding: 9px 10px;
+        font-size: 13px;
+      }
+
+      .names-box {
+        min-height: 180px;
+      }
+    }
+
   </style>
 </head>
 
@@ -373,8 +446,8 @@
     <section id="setupArea">
       <div class="top">
         <div>
-          <h1>Approved Raffle Wheel</h1>
-          <p class="subtitle">Enter Details, verify your login, then generate the wheel.</p>
+          <h1>Randomizer Wheel</h1>
+          <p class="subtitle">Enter Randomizer details, verify your login, then generate the wheel.</p>
         </div>
       </div>
 
@@ -399,7 +472,7 @@
           <div class="field">
             <label for="namesInput">Name List</label>
             <textarea id="namesInput" class="names-box" placeholder="Paste names here, one per line."></textarea>
-            <div class="help">Duplicate names are entered multiple times.</div>
+            <div class="help">Duplicate names recieve multiple entries.</div>
           </div>
         </div>
 
@@ -420,13 +493,13 @@
           </div>
 
           <div id="authStatus" class="status">
-            Waiting for raffle details.
+            Waiting for Randomizer details.
           </div>
 
           <div class="help">
-            If you need a Username or Username has expired Contact CrestedCritters.
+            If you need a Username or yours has expired contact Crested Critters.
             Email: Contact_us@crestedcritters.com
-            On mobile, allow pop-ups for this raffle page if the approval window does not open.
+            On iPhone, allow pop-ups for this Randomizer page if the approval window does not open.
           </div>
         </div>
       </div>
@@ -466,9 +539,6 @@
               <option value="spin-count">Spin Count — final winner is the last spin</option>
               <option value="last-name-spun">Last Name Spun — remove landed names until one remains</option>
             </select>
-            <div id="modeNote" class="mode-note">
-              Spin Count mode uses the selected number of spins. The final winner is whoever lands on the last spin.
-            </div>
             <div id="remainingPill" class="remaining-pill" style="display:none;">
               <span id="remainingCount">0</span> names remaining
             </div>
@@ -597,7 +667,6 @@
     const canvas = document.getElementById("wheel");
     const ctx = canvas.getContext("2d");
     const wheelModeSelect = document.getElementById("wheelModeSelect");
-    const modeNote = document.getElementById("modeNote");
     const remainingPill = document.getElementById("remainingPill");
     const remainingCount = document.getElementById("remainingCount");
     const spinCountControls = document.getElementById("spinCountControls");
@@ -932,13 +1001,11 @@
         spinCountControls.style.display = "none";
         singleSpinBtn.style.display = "none";
         startSpinsBtn.textContent = "Start Last Name Spun";
-        modeNote.textContent = "Last Name Spun mode removes the exact entry the wheel lands on after each spin. If a name is listed multiple times, only one entry is removed per spin. Spins continue until one entry remains.";
         remainingPill.style.display = "inline-flex";
       } else {
         spinCountControls.style.display = "grid";
         singleSpinBtn.style.display = "";
         startSpinsBtn.textContent = "Start Spins";
-        modeNote.textContent = "Spin Count mode uses the selected number of spins. The final winner is whoever lands on the last spin.";
         remainingPill.style.display = "none";
       }
     }
@@ -970,7 +1037,7 @@
 
       if (!activeNames.length) {
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 34px Arial";
+        ctx.font = "bold 28px Arial";
         ctx.textAlign = "center";
         ctx.fillText("No names loaded", cx, cy);
         return;
@@ -986,7 +1053,7 @@
         ctx.stroke();
 
         ctx.fillStyle = "#052e16";
-        ctx.font = "bold 34px Arial";
+        ctx.font = "bold 28px Arial";
         ctx.textAlign = "center";
 
         const label = activeNames[0].length > 28
@@ -1037,7 +1104,7 @@
       }
 
       ctx.beginPath();
-      ctx.arc(cx, cy, 50, 0, Math.PI * 2);
+      ctx.arc(cx, cy, 44, 0, Math.PI * 2);
       ctx.fillStyle = "#111827";
       ctx.fill();
       ctx.strokeStyle = "rgba(255,255,255,.82)";
@@ -1045,7 +1112,7 @@
       ctx.stroke();
 
       ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 19px Arial";
+      ctx.font = "bold 17px Arial";
       ctx.textAlign = "center";
       ctx.fillText("SPIN", cx, cy + 8);
     }
@@ -1311,16 +1378,16 @@
 
     demoBtn.addEventListener("click", () => {
       raffleTitle.value = "Demo Giveaway";
-      raffleDescription.value = "This is a sample raffle wheel.";
+      raffleDescription.value = "This is a Demo Randomizer wheel.";
       namesInput.value = [
-        "John Doe",
-        "Johnny Doe",
-        "Jane Doe",
-        "Jimmy Doe",
-        "Timmy Doe",
-        "Timmy Doe"
+        "Chris",
+        "Jim",
+        "Tim",
+        "Mike",
+        "James",
+        "John"
       ].join("\n");
-      setStatus("Demo names loaded. Enter a username/password, then generate.", "");
+      setStatus("Demo names loaded. Enter an approved username/password, then generate.", "");
     });
 
     editBtn.addEventListener("click", () => {
