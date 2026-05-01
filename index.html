@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Randomizer Wheel</title>
+  <title>Approved Raffle Wheel</title>
 
   <style>
     :root {
@@ -312,8 +312,15 @@
       color: var(--muted);
     }
 
-    .hidden {
-      display: none !important;
+    .hidden-frame {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      left: -9999px;
+      top: -9999px;
+      border: 0;
+      opacity: 0;
+      pointer-events: none;
     }
 
     @media (max-width: 950px) {
@@ -324,6 +331,10 @@
 
       .names-box {
         min-height: 240px;
+      }
+
+      .spin-row {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -385,7 +396,7 @@
           </div>
 
           <div class="help">
-            Your approved user list is checked against your private Apps Script/Google Sheet backend.
+            The approved user list is checked against your private Apps Script/Google Sheet backend.
             Do not put usernames/passwords directly inside this GitHub Pages file.
           </div>
         </div>
@@ -455,7 +466,7 @@
       Example:
       const AUTH_ENDPOINT = "https://script.google.com/macros/s/AKfycb.../exec";
     ****************************************************************/
-    const AUTH_ENDPOINT = "https://script.google.com/macros/s/AKfycbytXUl6Eq8-iuzokxm-WSDXK1VYwy5Da95jgUXwyug9W3xR9ZfFE-T1z5v4HwqkT0GaDQ/exec";
+    const AUTH_ENDPOINT = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
 
     const SPIN_MS = 5000;
 
@@ -551,47 +562,62 @@
         .join("");
     }
 
-    function jsonp(url, params) {
+    function authViaHiddenIframe(url, params) {
       return new Promise((resolve, reject) => {
-        const callbackName = "__raffleAuthCallback_" + Date.now() + "_" + Math.floor(Math.random() * 1000000);
+        const requestId = "raffle_auth_" + Date.now() + "_" + Math.floor(Math.random() * 1000000);
 
         const fullParams = new URLSearchParams({
           ...params,
-          callback: callbackName
+          requestId
         });
 
-        const script = document.createElement("script");
-        const cleanup = () => {
-          try {
-            delete window[callbackName];
-          } catch {
-            window[callbackName] = undefined;
-          }
+        const iframe = document.createElement("iframe");
+        iframe.className = "hidden-frame";
 
-          if (script.parentNode) {
-            script.parentNode.removeChild(script);
+        let done = false;
+
+        const cleanup = () => {
+          window.removeEventListener("message", onMessage);
+
+          if (iframe.parentNode) {
+            iframe.parentNode.removeChild(iframe);
           }
         };
 
         const timer = setTimeout(() => {
-          cleanup();
-          reject(new Error("The login check timed out."));
-        }, 15000);
+          if (done) return;
 
-        window[callbackName] = (data) => {
+          done = true;
+          cleanup();
+          reject(new Error("The login check timed out. Confirm the Apps Script Web App is deployed as Execute as: Me and Who has access: Anyone."));
+        }, 20000);
+
+        function onMessage(event) {
+          const data = event.data || {};
+
+          if (!data || data.source !== "raffle-auth" || data.requestId !== requestId) {
+            return;
+          }
+
+          done = true;
           clearTimeout(timer);
           cleanup();
-          resolve(data);
-        };
+          resolve(data.payload);
+        }
 
-        script.onerror = () => {
+        iframe.onerror = () => {
+          if (done) return;
+
+          done = true;
           clearTimeout(timer);
           cleanup();
-          reject(new Error("Could not reach the approval server."));
+          reject(new Error("Could not load the approval server iframe."));
         };
 
-        script.src = url + "?" + fullParams.toString();
-        document.body.appendChild(script);
+        window.addEventListener("message", onMessage);
+
+        iframe.src = url + "?" + fullParams.toString();
+        document.body.appendChild(iframe);
       });
     }
 
@@ -610,14 +636,14 @@
     }
 
     async function verifyApprovedLogin(username, password) {
-      if (!AUTH_ENDPOINT || AUTH_ENDPOINT.includes("PASTE_YOUR_APPS_SCRIPT")) {
+      if (!AUTH_ENDPOINT || AUTH_ENDPOINT.includes("https://script.google.com/macros/s/AKfycbytXUl6Eq8-iuzokxm-WSDXK1VYwy5Da95jgUXwyug9W3xR9ZfFE-T1z5v4HwqkT0GaDQ/exec")) {
         throw new Error("AUTH_ENDPOINT is not set yet. Paste your Apps Script Web App URL into index.html.");
       }
 
       const usernameKey = username.toLowerCase().trim();
       const passwordHash = await sha256Hex(usernameKey + ":" + password);
 
-      return jsonp(AUTH_ENDPOINT, {
+      return authViaHiddenIframe(AUTH_ENDPOINT, {
         action: "login",
         username: usernameKey,
         passwordHash
