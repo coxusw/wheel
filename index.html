@@ -33,7 +33,7 @@
         var(--bg);
       color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
-      padding: 20px;
+      padding: 14px;
     }
 
     .app {
@@ -42,7 +42,7 @@
     }
 
     .top {
-      margin-bottom: 20px;
+      margin-bottom: 12px;
       display: flex;
       gap: 16px;
       align-items: center;
@@ -81,8 +81,8 @@
     .card {
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 18px;
+      border-radius: 20px;
+      padding: 14px;
       box-shadow: var(--shadow);
     }
 
@@ -239,8 +239,8 @@
 
     .wheel-layout {
       display: grid;
-      grid-template-columns: minmax(320px, 640px) 1fr;
-      gap: 22px;
+      grid-template-columns: minmax(280px, 520px) 1fr;
+      gap: 16px;
       align-items: start;
     }
 
@@ -248,8 +248,8 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      margin-top: 12px;
-      margin-bottom: 18px;
+      margin-top: 8px;
+      margin-bottom: 10px;
       padding: 8px 12px;
       border-radius: 999px;
       background: rgba(255,255,255,.1);
@@ -260,7 +260,7 @@
 
     .wheel-wrap {
       position: relative;
-      width: min(640px, 90vw);
+      width: min(520px, 62vh, 90vw);
       aspect-ratio: 1 / 1;
       margin: 0 auto;
     }
@@ -282,9 +282,9 @@
       transform: translateX(-50%);
       width: 0;
       height: 0;
-      border-left: 19px solid transparent;
-      border-right: 19px solid transparent;
-      border-top: 46px solid var(--accent-2);
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-top: 36px solid var(--accent-2);
       z-index: 5;
       filter: drop-shadow(0 3px 6px rgba(0,0,0,.65));
     }
@@ -312,7 +312,7 @@
 
     .history {
       margin-top: 14px;
-      max-height: 320px;
+      max-height: 240px;
       overflow: auto;
       border-radius: 14px;
       border: 1px solid var(--border);
@@ -373,7 +373,7 @@
     <section id="setupArea">
       <div class="top">
         <div>
-          <h1>Randomizer Wheel</h1>
+          <h1>Approved Raffle Wheel</h1>
           <p class="subtitle">Enter Details, verify your login, then generate the wheel.</p>
         </div>
       </div>
@@ -399,7 +399,7 @@
           <div class="field">
             <label for="namesInput">Name List</label>
             <textarea id="namesInput" class="names-box" placeholder="Paste names here, one per line."></textarea>
-            <div class="help">Duplicate names will have multiple entries.</div>
+            <div class="help">Duplicate names are entered multiple times.</div>
           </div>
         </div>
 
@@ -424,8 +424,9 @@
           </div>
 
           <div class="help">
-            If your Username has expired contact Crested Critters.
-            Contact_us@crestedcritters.com
+            If you need a Username or Username has expired Contact CrestedCritters.
+            Email: Contact_us@crestedcritters.com
+            On mobile, allow pop-ups for this raffle page if the approval window does not open.
           </div>
         </div>
       </div>
@@ -493,7 +494,7 @@
           </div>
 
           <div class="history">
-            <div class="small" id="historyEmpty">Spin "winners" will appear here.</div>
+            <div class="small" id="historyEmpty">Spin winners will appear here.</div>
             <div id="historyList"></div>
           </div>
         </div>
@@ -669,7 +670,66 @@
         .join("");
     }
 
-    function authViaRedirectPopup(url, params) {
+    function openApprovalPopupImmediately() {
+      const popup = window.open(
+        "about:blank",
+        "raffleAuthPopup",
+        "width=520,height=620,menubar=no,toolbar=no,location=no,status=no"
+      );
+
+      if (!popup) {
+        throw new Error("The approval popup was blocked. On iPhone, allow pop-ups for this site or use the no-popup mobile mode below.");
+      }
+
+      try {
+        popup.document.open();
+        popup.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Checking Access...</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <style>
+              body {
+                margin: 0;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #0f172a;
+                color: white;
+                font-family: Arial, sans-serif;
+                padding: 24px;
+              }
+              .box {
+                max-width: 420px;
+                text-align: center;
+                background: #111827;
+                border: 1px solid rgba(255,255,255,.18);
+                border-radius: 18px;
+                padding: 24px;
+                box-shadow: 0 20px 70px rgba(0,0,0,.35);
+              }
+              p { color: #cbd5e1; line-height: 1.45; }
+            </style>
+          </head>
+          <body>
+            <div class="box">
+              <h2>Checking access...</h2>
+              <p>After approval, tap <strong>Return to Raffle Wheel</strong>.</p>
+            </div>
+          </body>
+          </html>
+        `);
+        popup.document.close();
+      } catch (err) {
+        // Some mobile browsers do not allow writing to the temporary popup.
+      }
+
+      return popup;
+    }
+
+    function authViaRedirectPopup(url, params, popup) {
       return new Promise((resolve, reject) => {
         const requestId = "raffle_auth_" + Date.now() + "_" + Math.floor(Math.random() * 1000000);
         const storageKey = "raffle_auth_" + requestId;
@@ -679,58 +739,10 @@
           localStorage.removeItem(storageKey);
         } catch (err) {}
 
-        const popup = window.open(
-          "about:blank",
-          "raffleAuthPopup",
-          "width=520,height=620,menubar=no,toolbar=no,location=no,status=no"
-        );
-
-        if (!popup) {
-          reject(new Error("The approval popup was blocked. Allow pop-ups for this site and try again."));
+        if (!popup || popup.closed) {
+          reject(new Error("The approval popup was not available. Try again and allow pop-ups for this site."));
           return;
         }
-
-        try {
-          popup.document.open();
-          popup.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <title>Checking Access...</title>
-              <style>
-                body {
-                  margin: 0;
-                  min-height: 100vh;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  background: #0f172a;
-                  color: white;
-                  font-family: Arial, sans-serif;
-                  padding: 24px;
-                }
-                .box {
-                  max-width: 420px;
-                  text-align: center;
-                  background: #111827;
-                  border: 1px solid rgba(255,255,255,.18);
-                  border-radius: 18px;
-                  padding: 24px;
-                  box-shadow: 0 20px 70px rgba(0,0,0,.35);
-                }
-                p { color: #cbd5e1; line-height: 1.45; }
-              </style>
-            </head>
-            <body>
-              <div class="box">
-                <h2>Checking access...</h2>
-                <p>After Apps Script checks your access, click the return button in this window if it does not close automatically.</p>
-              </div>
-            </body>
-            </html>
-          `);
-          popup.document.close();
-        } catch (err) {}
 
         const fullParams = new URLSearchParams({
           ...params,
@@ -796,7 +808,7 @@
             popup.close();
           } catch (err) {}
 
-          reject(new Error("The login check timed out. In the approval popup, click the Return to Raffle Wheel button after Apps Script finishes checking access. If you never see that button, redeploy Apps Script as a new version."));
+          reject(new Error("The login check timed out. In the approval popup, tap Return to Raffle Wheel after Apps Script finishes checking access."));
         }, 120000);
 
         popup.location.href = url + "?" + fullParams.toString();
@@ -817,7 +829,7 @@
       });
     }
 
-    async function verifyApprovedLogin(username, password) {
+    async function verifyApprovedLogin(username, password, popup) {
       if (!AUTH_ENDPOINT || AUTH_ENDPOINT.includes("PASTE_YOUR_APPS_SCRIPT")) {
         throw new Error("AUTH_ENDPOINT is not set yet. Paste your Apps Script Web App URL into index.html.");
       }
@@ -829,7 +841,7 @@
         action: "login",
         username: usernameKey,
         passwordHash
-      });
+      }, popup);
     }
 
     async function handleGenerate() {
@@ -857,8 +869,14 @@
       generateBtn.disabled = true;
       setStatus("Checking approved access...", "");
 
+      let approvalPopup;
+
       try {
-        const auth = await verifyApprovedLogin(username, password);
+        // Open immediately while still inside the button tap/click.
+        // This prevents iPhone Safari from blocking the approval window.
+        approvalPopup = openApprovalPopupImmediately();
+
+        const auth = await verifyApprovedLogin(username, password, approvalPopup);
 
         if (!auth || !auth.ok) {
           setStatus(auth && auth.message ? auth.message : "Login was not approved.", "bad");
@@ -946,7 +964,7 @@
       const h = canvas.height;
       const cx = w / 2;
       const cy = h / 2;
-      const radius = Math.min(cx, cy) - 16;
+      const radius = Math.min(cx, cy) - 18;
 
       ctx.clearRect(0, 0, w, h);
 
@@ -1019,7 +1037,7 @@
       }
 
       ctx.beginPath();
-      ctx.arc(cx, cy, 58, 0, Math.PI * 2);
+      ctx.arc(cx, cy, 50, 0, Math.PI * 2);
       ctx.fillStyle = "#111827";
       ctx.fill();
       ctx.strokeStyle = "rgba(255,255,255,.82)";
@@ -1027,7 +1045,7 @@
       ctx.stroke();
 
       ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 22px Arial";
+      ctx.font = "bold 19px Arial";
       ctx.textAlign = "center";
       ctx.fillText("SPIN", cx, cy + 8);
     }
@@ -1297,12 +1315,12 @@
       namesInput.value = [
         "John Doe",
         "Johnny Doe",
+        "Jane Doe",
         "Jimmy Doe",
         "Timmy Doe",
-        "John Doe",
-        "Jane Doe"
+        "Timmy Doe"
       ].join("\n");
-      setStatus("Demo names loaded. Enter an approved username/password, then generate.", "");
+      setStatus("Demo names loaded. Enter a username/password, then generate.", "");
     });
 
     editBtn.addEventListener("click", () => {
