@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Randomizer Wheel</title>
+  <title>Approved Raffle Wheel</title>
 
   <style>
     :root {
@@ -345,8 +345,8 @@
     <section id="setupArea">
       <div class="top">
         <div>
-          <h1>Randomizer Wheel</h1>
-          <p class="subtitle">Enter Details, verify your login, then generate the wheel.</p>
+          <h1>Approved Raffle Wheel</h1>
+          <p class="subtitle">Enter raffle details, verify your approved login, then generate the wheel.</p>
         </div>
       </div>
 
@@ -377,7 +377,7 @@
 
         <div class="card">
           <div class="field">
-            <label for="usernameInput">Username</label>
+            <label for="usernameInput">Approved Username</label>
             <input id="usernameInput" type="text" autocomplete="username" />
           </div>
 
@@ -396,8 +396,8 @@
           </div>
 
           <div class="help">
-            If your Username is expired Contact Crested Critters.
-           Contact_us@crestedcritters.com
+            The approved user list is checked against your private Apps Script/Google Sheet backend.
+            Do not put usernames/passwords directly inside this GitHub Pages file.
           </div>
         </div>
       </div>
@@ -408,7 +408,7 @@
         <div class="brand">
           <img id="displayLogo" class="brand-logo" alt="Raffle logo" />
           <div>
-            <h1 id="displayTitle">Randomizer Wheel</h1>
+            <h1 id="displayTitle">Raffle Wheel</h1>
             <p id="displayDescription" class="subtitle"></p>
             <div class="count">
               <span id="count">0</span> names loaded
@@ -678,7 +678,7 @@
             <body>
               <div class="box">
                 <h2>Checking access...</h2>
-                <p>This approval window should redirect automatically.</p>
+                <p>After Apps Script checks your access, click the return button in this window if it does not close automatically.</p>
               </div>
             </body>
             </html>
@@ -750,8 +750,8 @@
             popup.close();
           } catch (err) {}
 
-          reject(new Error("The login check timed out. Open the Apps Script Web App URL directly and confirm it shows a small response page, then redeploy as a new version."));
-        }, 45000);
+          reject(new Error("The login check timed out. In the approval popup, click the Return to Raffle Wheel button after Apps Script finishes checking access. If you never see that button, redeploy Apps Script as a new version."));
+        }, 120000);
 
         popup.location.href = url + "?" + fullParams.toString();
       });
