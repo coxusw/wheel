@@ -346,7 +346,7 @@
       <div class="top">
         <div>
           <h1>Randomizer Wheel</h1>
-          <p class="subtitle">Enter details, verify your approved login, then generate the wheel.</p>
+          <p class="subtitle">Enter Details, verify your approved login, then generate the wheel.</p>
         </div>
       </div>
 
@@ -377,7 +377,7 @@
 
         <div class="card">
           <div class="field">
-            <label for="usernameInput">Approved Username</label>
+            <label for="usernameInput">Username</label>
             <input id="usernameInput" type="text" autocomplete="username" />
           </div>
 
@@ -392,12 +392,12 @@
           </div>
 
           <div id="authStatus" class="status">
-            Waiting for Wheel details.
+            Waiting for raffle details.
           </div>
 
           <div class="help">
-            If you need a login Please Contact us @ Contact_us@crestedcritters.com.
-            If your username is expired dont hesitate to reach out.
+            If your UserName is expired please reach out to Crested Critters.
+            Contact_us@crestedcritters.com
           </div>
         </div>
       </div>
@@ -562,35 +562,100 @@
         .join("");
     }
 
-    function authViaHiddenIframe(url, params) {
+    function openAuthPopup() {
+      const popup = window.open(
+        "about:blank",
+        "raffleAuthPopup",
+        "width=520,height=620,menubar=no,toolbar=no,location=no,status=no"
+      );
+
+      if (!popup) {
+        throw new Error("The approval popup was blocked. Allow pop-ups for this site and try again.");
+      }
+
+      try {
+        popup.document.open();
+        popup.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Checking Access...</title>
+            <style>
+              body {
+                margin: 0;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #0f172a;
+                color: white;
+                font-family: Arial, sans-serif;
+                padding: 24px;
+              }
+              .box {
+                max-width: 420px;
+                text-align: center;
+                background: #111827;
+                border: 1px solid rgba(255,255,255,.18);
+                border-radius: 18px;
+                padding: 24px;
+                box-shadow: 0 20px 70px rgba(0,0,0,.35);
+              }
+              p { color: #cbd5e1; line-height: 1.45; }
+            </style>
+          </head>
+          <body>
+            <div class="box">
+              <h2>Checking access...</h2>
+              <p>This approval window should close automatically.</p>
+            </div>
+          </body>
+          </html>
+        `);
+        popup.document.close();
+      } catch (err) {
+        // Some browsers do not allow writing to the popup. It can still be used.
+      }
+
+      return popup;
+    }
+
+    function authViaPopup(url, params, popup) {
       return new Promise((resolve, reject) => {
         const requestId = "raffle_auth_" + Date.now() + "_" + Math.floor(Math.random() * 1000000);
 
         const fullParams = new URLSearchParams({
           ...params,
-          requestId
+          requestId,
+          mode: "popup"
         });
-
-        const iframe = document.createElement("iframe");
-        iframe.className = "hidden-frame";
 
         let done = false;
 
         const cleanup = () => {
           window.removeEventListener("message", onMessage);
-
-          if (iframe.parentNode) {
-            iframe.parentNode.removeChild(iframe);
-          }
+          clearInterval(closedTimer);
         };
 
-        const timer = setTimeout(() => {
+        const timeoutTimer = setTimeout(() => {
           if (done) return;
 
           done = true;
           cleanup();
-          reject(new Error("The login check timed out. Confirm the Apps Script Web App is deployed as Execute as: Me and Who has access: Anyone."));
-        }, 20000);
+          try { popup.close(); } catch (err) {}
+          reject(new Error("The login check timed out. Open the Apps Script URL directly once to confirm it is accessible, then try again."));
+        }, 30000);
+
+        const closedTimer = setInterval(() => {
+          if (done) return;
+
+          if (popup.closed) {
+            done = true;
+            clearTimeout(timeoutTimer);
+            cleanup();
+            reject(new Error("The approval popup was closed before login finished."));
+          }
+        }, 500);
 
         function onMessage(event) {
           const data = event.data || {};
@@ -600,24 +665,17 @@
           }
 
           done = true;
-          clearTimeout(timer);
+          clearTimeout(timeoutTimer);
           cleanup();
+
+          try { popup.close(); } catch (err) {}
+
           resolve(data.payload);
         }
 
-        iframe.onerror = () => {
-          if (done) return;
-
-          done = true;
-          clearTimeout(timer);
-          cleanup();
-          reject(new Error("Could not load the approval server iframe."));
-        };
-
         window.addEventListener("message", onMessage);
 
-        iframe.src = url + "?" + fullParams.toString();
-        document.body.appendChild(iframe);
+        popup.location.href = url + "?" + fullParams.toString();
       });
     }
 
@@ -635,7 +693,7 @@
       });
     }
 
-    async function verifyApprovedLogin(username, password) {
+    async function verifyApprovedLogin(username, password, popup) {
       if (!AUTH_ENDPOINT || AUTH_ENDPOINT.includes("PASTE_YOUR_APPS_SCRIPT")) {
         throw new Error("AUTH_ENDPOINT is not set yet. Paste your Apps Script Web App URL into index.html.");
       }
@@ -643,11 +701,11 @@
       const usernameKey = username.toLowerCase().trim();
       const passwordHash = await sha256Hex(usernameKey + ":" + password);
 
-      return authViaHiddenIframe(AUTH_ENDPOINT, {
+      return authViaPopup(AUTH_ENDPOINT, {
         action: "login",
         username: usernameKey,
         passwordHash
-      });
+      }, popup);
     }
 
     async function handleGenerate() {
@@ -675,8 +733,13 @@
       generateBtn.disabled = true;
       setStatus("Checking approved access...", "");
 
+      let authPopup;
+
       try {
-        const auth = await verifyApprovedLogin(username, password);
+        // Open the popup immediately after the button click so browsers do not block it.
+        authPopup = openAuthPopup();
+
+        const auth = await verifyApprovedLogin(username, password, authPopup);
 
         if (!auth || !auth.ok) {
           setStatus(auth && auth.message ? auth.message : "Login was not approved.", "bad");
@@ -943,14 +1006,14 @@
       raffleTitle.value = "Demo Giveaway";
       raffleDescription.value = "This is a sample raffle wheel.";
       namesInput.value = [
-        "John Doe",
-        "Johnny Doe",
+        "John Doe Sr",
         "John Doe jr",
-        "Johnny Doe jr",
         "Jane Doe",
-        "Jill Doe"
+        "Timmy",
+        "Jimmy",
+        "Kimmy"
       ].join("\n");
-      setStatus("Demo names loaded. Enter an approved username/password, then generate.", "");
+      setStatus("Demo names loaded. Enter a username/password, then generate.", "");
     });
 
     editBtn.addEventListener("click", () => {
@@ -985,4 +1048,3 @@
   </script>
 </body>
 </html>
-
