@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Approved Raffle Wheel</title>
+  <title>Randomizer Wheel</title>
 
   <style>
     :root {
@@ -345,8 +345,8 @@
     <section id="setupArea">
       <div class="top">
         <div>
-          <h1>Approved Raffle Wheel</h1>
-          <p class="subtitle">Enter raffle details, verify your approved login, then generate the wheel.</p>
+          <h1>Randomizer Wheel</h1>
+          <p class="subtitle">Enter details, verify your approved login, then generate the wheel.</p>
         </div>
       </div>
 
@@ -392,12 +392,12 @@
           </div>
 
           <div id="authStatus" class="status">
-            Waiting for raffle details.
+            Waiting for Wheel details.
           </div>
 
           <div class="help">
-            The approved user list is checked against your private Apps Script/Google Sheet backend.
-            Do not put usernames/passwords directly inside this GitHub Pages file.
+            If you need a login Please Contact us @ Contact_us@crestedcritters.com.
+            If your username is expired dont hesitate to reach out.
           </div>
         </div>
       </div>
@@ -408,7 +408,7 @@
         <div class="brand">
           <img id="displayLogo" class="brand-logo" alt="Raffle logo" />
           <div>
-            <h1 id="displayTitle">Raffle Wheel</h1>
+            <h1 id="displayTitle">Randomizer Wheel</h1>
             <p id="displayDescription" class="subtitle"></p>
             <div class="count">
               <span id="count">0</span> names loaded
@@ -466,7 +466,7 @@
       Example:
       const AUTH_ENDPOINT = "https://script.google.com/macros/s/AKfycb.../exec";
     ****************************************************************/
-    const AUTH_ENDPOINT = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+    const AUTH_ENDPOINT = "https://script.google.com/macros/s/AKfycbyFseap1SAgJj9kfmCi3AhsE6E8UNtNutko86RqXU-PmyNTkxfNc_d3-XLc6Kf7ZmIO-g/exec";
 
     const SPIN_MS = 5000;
 
@@ -636,7 +636,7 @@
     }
 
     async function verifyApprovedLogin(username, password) {
-      if (!AUTH_ENDPOINT || AUTH_ENDPOINT.includes("https://script.google.com/macros/s/AKfycbytXUl6Eq8-iuzokxm-WSDXK1VYwy5Da95jgUXwyug9W3xR9ZfFE-T1z5v4HwqkT0GaDQ/exec")) {
+      if (!AUTH_ENDPOINT || AUTH_ENDPOINT.includes("PASTE_YOUR_APPS_SCRIPT")) {
         throw new Error("AUTH_ENDPOINT is not set yet. Paste your Apps Script Web App URL into index.html.");
       }
 
