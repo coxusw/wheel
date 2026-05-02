@@ -308,6 +308,12 @@
           </div>
 
           <div class="field">
+            <label for="giveawayRules">Giveaway Rules</label>
+            <textarea id="giveawayRules" placeholder="Example: Must follow the page, like the post, and comment to qualify."></textarea>
+            <div class="help">Rules are saved and displayed on the official result page.</div>
+          </div>
+
+          <div class="field">
             <label for="logoFile">Logo</label>
             <input id="logoFile" type="file" accept="image/*" />
             <div class="help">The logo is compressed before being saved with the official result page.</div>
@@ -331,10 +337,16 @@
 
           <div id="spinCountControls" class="field">
             <label for="spinCountInput">Number of Spins</label>
-            <input id="spinCountInput" type="number" min="1" max="10" value="1" />
+            <input id="spinCountInput" type="number" min="1" max="1000" value="1" />
             <div class="buttons" style="margin-top:8px;">
               <button id="randomSpinCountBtn" type="button" class="gold">Random 1–10</button>
             </div>
+          </div>
+
+          <div class="field">
+            <label for="prizeIntervalInput">Prize Winner Every X Spins</label>
+            <input id="prizeIntervalInput" type="number" min="0" max="1000" value="0" />
+            <div class="help">Optional. Use 0 for none. Example: 10 marks every 10th spin as a prize winner.</div>
           </div>
 
           <div class="field">
@@ -376,58 +388,27 @@
       <div class="faq-grid">
         <div class="card">
           <h2>How the official randomizer works</h2>
-          <p>
-            The public wheel page does not pick the winner. When you generate an official giveaway,
-            the entry list is sent to the private Apps Script backend. Apps Script verifies the runner login,
-            generates the spin plan, saves the result in Google Sheets, and creates a public result code.
-          </p>
-
+          <p>The public wheel page does not pick the winner. Apps Script verifies the runner login, creates the official spin plan, saves it to Google Sheets, and creates a public result code.</p>
           <h3>Why this is more trustworthy</h3>
-          <p>
-            The winner is generated and saved before the result page is shown. The result page includes the original entry list,
-            the spin history, the final winner, and a verification code.
-          </p>
-
+          <p>The result is saved before it is displayed. The result page includes the original entry list, spin history, final winner, and verification code.</p>
           <h3>Duplicate entries</h3>
-          <p>
-            Duplicate names are kept as separate entries. If someone earned three entries, list their name three times.
-          </p>
-
-          <h3>How players verify results</h3>
-          <p>
-            Players can enter the result code on the lookup page or open the share link. They can review the entries and replay the official wheel.
-          </p>
+          <p>Duplicate names are kept as separate entries. If someone earned three entries, list their name three times.</p>
         </div>
 
         <div class="card">
-          <h2>Username & Password Access</h2>
-          <p>
-            To get a username and password, contact Crested Critters at
-            <strong>Contact_us@crestedcritters.com</strong>.
-          </p>
-
+          <h2>Username & Password</h2>
+          <p>To get a username and password, contact Crested Critters at <strong>Contact_us@crestedcritters.com</strong>.</p>
           <h3>Cost</h3>
-          <p id="faqCostText">
-            Current cost: contact Crested Critters for current pricing.
-          </p>
-
+          <p>Current cost: contact Crested Critters for current pricing.</p>
           <h3>How long are results saved?</h3>
-          <p id="faqSavedText">
-            Results are intended to stay available for at least 90 days. Long-term storage is not guaranteed and old results may be removed during cleanup.
-          </p>
-
-          <h3>What should giveaway runners tell players?</h3>
-          <p>
-            Share the official result code or result link after the giveaway. Players should verify that their name appears in the original entry list.
-          </p>
+          <p>Results are intended to stay available for at least 90 days. Long-term storage is not guaranteed and old results may be removed during cleanup.</p>
+          <h3>What players should check</h3>
+          <p>Players should check the original entry list and replay the official wheel from the result page.</p>
         </div>
 
         <div class="card wide-card">
           <h2>Name Collector JavaScript</h2>
-          <p>
-            This helper can collect visible/loadable names from Facebook or Instagram pages you can access.
-            It does not bypass privacy settings and it cannot run inside the native Facebook or Instagram apps.
-          </p>
+          <p>This helper collects visible/loadable names from Facebook or Instagram pages you can access. It cannot run inside the native Facebook or Instagram app and it does not bypass privacy settings.</p>
 
           <div class="buttons">
             <button class="primary copy-code-btn" type="button" data-copy-target="collectorBookmarklet">Copy Bookmarklet Version</button>
@@ -435,43 +416,38 @@
           </div>
 
           <h3>Bookmarklet version</h3>
-          <p class="help">Best for repeated use. Save this as a browser bookmark URL.</p>
           <textarea id="collectorBookmarklet" class="code-box" readonly>javascript:(async()=&gt;{const STOP=new Set([&quot;follow&quot;,&quot;following&quot;,&quot;followers&quot;,&quot;likes&quot;,&quot;like&quot;,&quot;liked by&quot;,&quot;more&quot;,&quot;see more&quot;,&quot;view profile&quot;,&quot;message&quot;,&quot;requested&quot;,&quot;cancel&quot;,&quot;close&quot;,&quot;done&quot;,&quot;search&quot;,&quot;suggested&quot;,&quot;verified&quot;,&quot;reels&quot;,&quot;explore&quot;,&quot;home&quot;,&quot;notifications&quot;,&quot;share&quot;,&quot;comment&quot;,&quot;comments&quot;,&quot;reply&quot;,&quot;meta&quot;,&quot;facebook&quot;,&quot;instagram&quot;,&quot;all&quot;,&quot;invite&quot;,&quot;invited&quot;,&quot;add friend&quot;,&quot;friends&quot;]);const sleep=t=&gt;new Promise(r=&gt;setTimeout(r,t));function clean(v){return String(v||&quot;&quot;).replace(/\u00a0/g,&quot; &quot;).replace(/\s+/g,&quot; &quot;).replace(/&#x27;s profile picture$/i,&quot;&quot;).replace(/’s profile picture$/i,&quot;&quot;).replace(/ profile picture$/i,&quot;&quot;).replace(/^profile picture of /i,&quot;&quot;).replace(/^View the profile of /i,&quot;&quot;).replace(/^View profile of /i,&quot;&quot;).trim()}function good(v){const n=clean(v),l=n.toLowerCase();if(!n||n.length&lt;2||n.length&gt;60)return false;if(STOP.has(l))return false;if(/^(@)?[._-]+$/.test(n))return false;if(/https?:\/\//i.test(n))return false;if(/^\d+$/.test(n))return false;if(/^\d+\s+(likes|followers|following|comments|shares)$/i.test(n))return false;if(/[{}[\]&lt;&gt;=]/.test(n))return false;const words=n.split(&quot; &quot;).filter(Boolean);if(words.length&gt;8)return false;return true}function root(){const d=[...document.querySelectorAll(&#x27;[role=&quot;dialog&quot;],[aria-modal=&quot;true&quot;]&#x27;)];return d[d.length-1]||document.body}function scroller(r){const els=[r,...r.querySelectorAll(&quot;*&quot;)];return els.filter(el=&gt;{const s=getComputedStyle(el);return((/(auto|scroll)/.test(s.overflowY)||el.scrollHeight&gt;el.clientHeight+80)&amp;&amp;el.scrollHeight&gt;250&amp;&amp;el.clientHeight&gt;80)}).sort((a,b)=&gt;(b.scrollHeight-b.clientHeight)-(a.scrollHeight-a.clientHeight))[0]||r}const set=new Set();function add(v){const n=clean(v);if(good(n))set.add(n)}function addLines(v){String(v||&quot;&quot;).split(&quot;\n&quot;).map(clean).filter(Boolean).forEach(add)}function collect(r){r.querySelectorAll(&#x27;a[href],[role=&quot;link&quot;],span[dir=&quot;auto&quot;],div[dir=&quot;auto&quot;],img[alt],[aria-label]&#x27;).forEach(el=&gt;{addLines(el.getAttribute(&quot;aria-label&quot;));addLines(el.getAttribute(&quot;title&quot;));addLines(el.getAttribute(&quot;alt&quot;));addLines(el.innerText||el.textContent);if(el.tagName===&quot;A&quot;){try{const u=new URL(el.href,location.href);let p=u.pathname.split(&quot;/&quot;).filter(Boolean)[0]||&quot;&quot;;if(location.hostname.includes(&quot;instagram&quot;)&amp;&amp;p&amp;&amp;![&quot;p&quot;,&quot;reel&quot;,&quot;reels&quot;,&quot;stories&quot;,&quot;explore&quot;,&quot;accounts&quot;,&quot;direct&quot;].includes(p.toLowerCase()))add(&quot;@&quot;+p)}catch(e){}}})}const r=root(),s=scroller(r);let prev=-1,stable=0;for(let i=0;i&lt;90;i++){collect(r);if(s&amp;&amp;typeof s.scrollTop===&quot;number&quot;)s.scrollTop=s.scrollHeight;else scrollTo(0,document.body.scrollHeight);await sleep(350);collect(r);if(set.size===prev)stable++;else stable=0;prev=set.size;if(stable&gt;=5)break}const names=[...set].sort((a,b)=&gt;a.localeCompare(b));try{await navigator.clipboard.writeText(names.join(&quot;\n&quot;))}catch(e){}const old=document.getElementById(&quot;nameCollectorBox&quot;);if(old)old.remove();const box=document.createElement(&quot;div&quot;);box.id=&quot;nameCollectorBox&quot;;box.style.cssText=&quot;position:fixed;inset:12px;z-index:2147483647;background:#0f172a;color:white;border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:14px;font-family:Arial,sans-serif;box-shadow:0 20px 80px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:10px&quot;;box.innerHTML=&#x27;&lt;div style=&quot;display:flex;gap:8px;align-items:center;justify-content:space-between&quot;&gt;&lt;strong&gt;Collected &#x27;+names.length+&#x27; names&lt;/strong&gt;&lt;button id=&quot;ncClose&quot; style=&quot;padding:8px 10px;border:0;border-radius:10px;background:#ef4444;color:white;font-weight:700&quot;&gt;Close&lt;/button&gt;&lt;/div&gt;&lt;textarea id=&quot;ncText&quot; style=&quot;flex:1;min-height:260px;border-radius:12px;background:#020617;color:white;border:1px solid rgba(255,255,255,.2);padding:10px;font-size:14px&quot;&gt;&lt;/textarea&gt;&lt;button id=&quot;ncCopy&quot; style=&quot;padding:10px;border:0;border-radius:12px;background:#22c55e;color:#052e16;font-weight:900&quot;&gt;Copy Names&lt;/button&gt;&lt;div style=&quot;color:#cbd5e1;font-size:12px&quot;&gt;Only visible/loadable names are collected. Review the list before using it.&lt;/div&gt;&#x27;;document.body.appendChild(box);document.getElementById(&quot;ncText&quot;).value=names.join(&quot;\n&quot;);document.getElementById(&quot;ncClose&quot;).onclick=()=&gt;box.remove();document.getElementById(&quot;ncCopy&quot;).onclick=async()=&gt;{await navigator.clipboard.writeText(document.getElementById(&quot;ncText&quot;).value);document.getElementById(&quot;ncCopy&quot;).textContent=&quot;Copied!&quot;}})();</textarea>
 
           <h3>Console version</h3>
-          <p class="help">Best for desktop testing. Paste this into the browser console.</p>
           <textarea id="collectorConsole" class="code-box" readonly>(async()=&gt;{const STOP=new Set([&quot;follow&quot;,&quot;following&quot;,&quot;followers&quot;,&quot;likes&quot;,&quot;like&quot;,&quot;liked by&quot;,&quot;more&quot;,&quot;see more&quot;,&quot;view profile&quot;,&quot;message&quot;,&quot;requested&quot;,&quot;cancel&quot;,&quot;close&quot;,&quot;done&quot;,&quot;search&quot;,&quot;suggested&quot;,&quot;verified&quot;,&quot;reels&quot;,&quot;explore&quot;,&quot;home&quot;,&quot;notifications&quot;,&quot;share&quot;,&quot;comment&quot;,&quot;comments&quot;,&quot;reply&quot;,&quot;meta&quot;,&quot;facebook&quot;,&quot;instagram&quot;,&quot;all&quot;,&quot;invite&quot;,&quot;invited&quot;,&quot;add friend&quot;,&quot;friends&quot;]);const sleep=t=&gt;new Promise(r=&gt;setTimeout(r,t));function clean(v){return String(v||&quot;&quot;).replace(/\u00a0/g,&quot; &quot;).replace(/\s+/g,&quot; &quot;).replace(/&#x27;s profile picture$/i,&quot;&quot;).replace(/’s profile picture$/i,&quot;&quot;).replace(/ profile picture$/i,&quot;&quot;).replace(/^profile picture of /i,&quot;&quot;).replace(/^View the profile of /i,&quot;&quot;).replace(/^View profile of /i,&quot;&quot;).trim()}function good(v){const n=clean(v),l=n.toLowerCase();if(!n||n.length&lt;2||n.length&gt;60)return false;if(STOP.has(l))return false;if(/^(@)?[._-]+$/.test(n))return false;if(/https?:\/\//i.test(n))return false;if(/^\d+$/.test(n))return false;if(/^\d+\s+(likes|followers|following|comments|shares)$/i.test(n))return false;if(/[{}[\]&lt;&gt;=]/.test(n))return false;const words=n.split(&quot; &quot;).filter(Boolean);if(words.length&gt;8)return false;return true}function root(){const d=[...document.querySelectorAll(&#x27;[role=&quot;dialog&quot;],[aria-modal=&quot;true&quot;]&#x27;)];return d[d.length-1]||document.body}function scroller(r){const els=[r,...r.querySelectorAll(&quot;*&quot;)];return els.filter(el=&gt;{const s=getComputedStyle(el);return((/(auto|scroll)/.test(s.overflowY)||el.scrollHeight&gt;el.clientHeight+80)&amp;&amp;el.scrollHeight&gt;250&amp;&amp;el.clientHeight&gt;80)}).sort((a,b)=&gt;(b.scrollHeight-b.clientHeight)-(a.scrollHeight-a.clientHeight))[0]||r}const set=new Set();function add(v){const n=clean(v);if(good(n))set.add(n)}function addLines(v){String(v||&quot;&quot;).split(&quot;\n&quot;).map(clean).filter(Boolean).forEach(add)}function collect(r){r.querySelectorAll(&#x27;a[href],[role=&quot;link&quot;],span[dir=&quot;auto&quot;],div[dir=&quot;auto&quot;],img[alt],[aria-label]&#x27;).forEach(el=&gt;{addLines(el.getAttribute(&quot;aria-label&quot;));addLines(el.getAttribute(&quot;title&quot;));addLines(el.getAttribute(&quot;alt&quot;));addLines(el.innerText||el.textContent);if(el.tagName===&quot;A&quot;){try{const u=new URL(el.href,location.href);let p=u.pathname.split(&quot;/&quot;).filter(Boolean)[0]||&quot;&quot;;if(location.hostname.includes(&quot;instagram&quot;)&amp;&amp;p&amp;&amp;![&quot;p&quot;,&quot;reel&quot;,&quot;reels&quot;,&quot;stories&quot;,&quot;explore&quot;,&quot;accounts&quot;,&quot;direct&quot;].includes(p.toLowerCase()))add(&quot;@&quot;+p)}catch(e){}}})}const r=root(),s=scroller(r);let prev=-1,stable=0;for(let i=0;i&lt;90;i++){collect(r);if(s&amp;&amp;typeof s.scrollTop===&quot;number&quot;)s.scrollTop=s.scrollHeight;else scrollTo(0,document.body.scrollHeight);await sleep(350);collect(r);if(set.size===prev)stable++;else stable=0;prev=set.size;if(stable&gt;=5)break}const names=[...set].sort((a,b)=&gt;a.localeCompare(b));try{await navigator.clipboard.writeText(names.join(&quot;\n&quot;))}catch(e){}const old=document.getElementById(&quot;nameCollectorBox&quot;);if(old)old.remove();const box=document.createElement(&quot;div&quot;);box.id=&quot;nameCollectorBox&quot;;box.style.cssText=&quot;position:fixed;inset:12px;z-index:2147483647;background:#0f172a;color:white;border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:14px;font-family:Arial,sans-serif;box-shadow:0 20px 80px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:10px&quot;;box.innerHTML=&#x27;&lt;div style=&quot;display:flex;gap:8px;align-items:center;justify-content:space-between&quot;&gt;&lt;strong&gt;Collected &#x27;+names.length+&#x27; names&lt;/strong&gt;&lt;button id=&quot;ncClose&quot; style=&quot;padding:8px 10px;border:0;border-radius:10px;background:#ef4444;color:white;font-weight:700&quot;&gt;Close&lt;/button&gt;&lt;/div&gt;&lt;textarea id=&quot;ncText&quot; style=&quot;flex:1;min-height:260px;border-radius:12px;background:#020617;color:white;border:1px solid rgba(255,255,255,.2);padding:10px;font-size:14px&quot;&gt;&lt;/textarea&gt;&lt;button id=&quot;ncCopy&quot; style=&quot;padding:10px;border:0;border-radius:12px;background:#22c55e;color:#052e16;font-weight:900&quot;&gt;Copy Names&lt;/button&gt;&lt;div style=&quot;color:#cbd5e1;font-size:12px&quot;&gt;Only visible/loadable names are collected. Review the list before using it.&lt;/div&gt;&#x27;;document.body.appendChild(box);document.getElementById(&quot;ncText&quot;).value=names.join(&quot;\n&quot;);document.getElementById(&quot;ncClose&quot;).onclick=()=&gt;box.remove();document.getElementById(&quot;ncCopy&quot;).onclick=async()=&gt;{await navigator.clipboard.writeText(document.getElementById(&quot;ncText&quot;).value);document.getElementById(&quot;ncCopy&quot;).textContent=&quot;Copied!&quot;}})();</textarea>
 
-          <h3>Easy guide: Facebook post reactions</h3>
+          <h3>Facebook post reactions</h3>
           <ol>
             <li>Open Facebook in a browser, not the app.</li>
-            <li>Open the post.</li>
-            <li>Click the reactions/likes count so the list of people opens.</li>
+            <li>Open the post and click the reactions/likes count.</li>
             <li>Run the collector script.</li>
-            <li>Review the names, copy them, then paste them into the Randomizer Wheel name list.</li>
+            <li>Review the names, copy them, then paste them into the Randomizer Wheel.</li>
           </ol>
 
-          <h3>Easy guide: Facebook followers</h3>
+          <h3>Facebook followers</h3>
           <ol>
-            <li>Open the profile or page followers list in a browser.</li>
-            <li>Scroll until the list starts loading names.</li>
-            <li>Run the collector script.</li>
+            <li>Open the followers list in a browser.</li>
+            <li>Run the collector script after the list starts loading.</li>
             <li>Review the names before using them.</li>
           </ol>
 
-          <h3>Easy guide: Instagram likes/followers</h3>
+          <h3>Instagram likes/followers</h3>
           <ol>
             <li>Open Instagram in a browser, not the app.</li>
-            <li>Open the likes list, followers list, or following list.</li>
-            <li>Run the collector script.</li>
-            <li>Instagram may show usernames instead of display names. Review the list before generating a giveaway.</li>
+            <li>Open the likes, followers, or following list.</li>
+            <li>Run the collector script and review the output.</li>
           </ol>
 
           <h3>Important limits</h3>
           <ul>
-            <li>It only collects names that your browser can see or load.</li>
-            <li>Facebook and Instagram change their layouts often, so the collector may need updates later.</li>
-            <li>Always review the final name list before generating an official result.</li>
+            <li>Only names your browser can see/load are collected.</li>
+            <li>Facebook and Instagram may change layouts later.</li>
+            <li>Always review the name list before generating an official result.</li>
           </ul>
         </div>
       </div>
@@ -527,15 +503,17 @@
       Example:
       const AUTH_ENDPOINT = "https://script.google.com/macros/s/AKfycb.../exec";
     ****************************************************************/
-    const AUTH_ENDPOINT = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+    const AUTH_ENDPOINT = "https://script.google.com/macros/s/AKfycbwTxxd0TN0DizPQTlcuV-dJlEkMKH1q185Bh7TQSVyGvDLRr9TGF1kdSoZdt5oqA2xSgQ/exec";
 
     const raffleTitle = document.getElementById("raffleTitle");
     const raffleDescription = document.getElementById("raffleDescription");
+    const giveawayRules = document.getElementById("giveawayRules");
     const logoFile = document.getElementById("logoFile");
     const namesInput = document.getElementById("namesInput");
     const wheelModeSelect = document.getElementById("wheelModeSelect");
     const spinCountControls = document.getElementById("spinCountControls");
     const spinCountInput = document.getElementById("spinCountInput");
+    const prizeIntervalInput = document.getElementById("prizeIntervalInput");
     const usernameInput = document.getElementById("usernameInput");
     const passwordInput = document.getElementById("passwordInput");
     const generateBtn = document.getElementById("generateBtn");
@@ -786,11 +764,13 @@
     async function handleGenerateOfficial() {
       const title = cleanName(raffleTitle.value) || "Randomizer Wheel";
       const description = cleanName(raffleDescription.value);
+      const rules = cleanName(giveawayRules.value);
       const username = cleanName(usernameInput.value).toLowerCase();
       const password = String(passwordInput.value || "");
       const mode = wheelModeSelect.value;
       const entries = parseNames(namesInput.value);
-      const spinCount = Math.max(1, Math.min(10, Number(spinCountInput.value || 1)));
+      const spinCount = Math.max(1, Math.min(1000, Number(spinCountInput.value || 1)));
+      const prizeInterval = Math.max(0, Math.min(1000, Number(prizeIntervalInput.value || 0)));
 
       if (!AUTH_ENDPOINT || AUTH_ENDPOINT.includes("PASTE_YOUR_APPS_SCRIPT")) {
         setStatus("AUTH_ENDPOINT is not set yet. Paste your Apps Script Web App URL into index.html.", "bad");
@@ -825,8 +805,10 @@
           passwordHash,
           title,
           description,
+          rules,
           mode,
           spinCount,
+          prizeInterval,
           entriesJson: JSON.stringify(entries),
           logoDataUrl
         }, popup);
@@ -860,6 +842,7 @@
     demoBtn.addEventListener("click", () => {
       raffleTitle.value = "Demo Giveaway";
       raffleDescription.value = "This is a Demo wheel.";
+      giveawayRules.value = "Demo rules: must be eligible according to the giveaway post.";
       namesInput.value = [
         "Name 6",
         "Name 5",
@@ -877,8 +860,14 @@
 
     spinCountInput.addEventListener("input", () => {
       let value = Number(spinCountInput.value || 1);
-      value = Math.max(1, Math.min(10, value));
+      value = Math.max(1, Math.min(1000, value));
       spinCountInput.value = value;
+    });
+
+    prizeIntervalInput.addEventListener("input", () => {
+      let value = Number(prizeIntervalInput.value || 0);
+      value = Math.max(0, Math.min(1000, value));
+      prizeIntervalInput.value = value;
     });
 
     wheelModeSelect.addEventListener("change", updateModeUi);
